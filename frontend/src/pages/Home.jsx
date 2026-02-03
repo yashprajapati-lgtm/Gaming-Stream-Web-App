@@ -11,24 +11,23 @@ function Home() {
     });
   }, []);
 
+  // YOUR CLOUD BACKEND URL (No slash at the end)
+  const API_URL = "https://gaming-stream-web-app.onrender.com";
+
   return (
     <div className="home">
-      {/* Hero Section */}
       <section className="hero">
         <h1>🎮 Watch Live Gaming Streams</h1>
         <p>Stream • Watch • Chat with gamers worldwide</p>
       </section>
 
-      {/* Live Streams Grid */}
       <section className="streams">
         <h2>🔥 Live Streams</h2>
-
         <div className="stream-grid">
           {streams.length === 0 ? (
             <p>No streams live right now.</p>
           ) : (
             streams.map((stream) => (
-              /* LINK UPDATED: Now points to /live/STREAM_ID */
               <Link 
                 to={`/live/${stream._id}`} 
                 state={stream} 
@@ -36,9 +35,9 @@ function Home() {
                 style={{ textDecoration: 'none', color: 'white' }}
               >
                 <div className="card">
-                  {/* Thumbnail Image */}
+                  {/* ✅ FIXED: Uses Cloud URL for images now */}
                   <img
-                    src={stream.thumbnailUrl ? `http://localhost:5000${stream.thumbnailUrl}` : "https://via.placeholder.com/300x180"} 
+                    src={stream.thumbnailUrl ? `${API_URL}${stream.thumbnailUrl}` : "https://via.placeholder.com/300x180"} 
                     alt="stream" 
                     style={{ width: "100%", height: "180px", objectFit: "cover" }}
                   />

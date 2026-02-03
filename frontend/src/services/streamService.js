@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:5000/api/stream";
+// ✅ FIXED: Now pointing to your Live Cloud Backend
+const API_URL = "https://gaming-stream-web-app.onrender.com/api/stream";
 
 /*
   Stream Service
@@ -7,8 +8,14 @@ const API_URL = "http://localhost:5000/api/stream";
 
 // 🔹 Get Live Streams
 export const getLiveStreams = async () => {
-  const response = await fetch(`${API_URL}/live`);
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/live`);
+    if (!response.ok) throw new Error("Failed to fetch streams");
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching streams:", error);
+    return []; // Return empty array so the app doesn't crash
+  }
 };
 
 // 🔹 Create Stream (Protected)
