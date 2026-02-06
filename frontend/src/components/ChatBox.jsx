@@ -1,89 +1,81 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-// Connect to Backend
-const socket = io.connect("http://localhost:5000");
+// ✅ FIX 1: Connect to your RENDER URL (Not Localhost!)
+const socket = io.connect("https://gaming-stream-web-app.onrender.com");
 
-function ChatBox({ streamId }) {
+function ChatBox({ roomId, username }) { 
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
-  const [username, setUsername] = useState("Viewer"); // Default name
 
-  // 1. Join the Room when component loads
+  // ✅ FIX 2: Join the specific Room ID (This was likely missing!)
   useEffect(() => {
-    if (streamId) {
-      socket.emit("join_room", streamId);
+    if (roomId) {
+      socket.emit("join_room", roomId);
+      console.log(`Connected to Room: ${roomId}`);
     }
-  }, [streamId]);
+  }, [roomId]);
 
-  // 2. Listen for incoming messages
+  // ✅ FIX 3: Listen for messages from others
   useEffect(() => {
-    const handleReceiveMessage = (data) => {
+    const receiveHandler = (data) => {
+      console.log("Message Received:", data); // Debug log
       setMessageList((list) => [...list, data]);
     };
 
-    socket.on("receive_message", handleReceiveMessage);
-
+    socket.on("receive_message", receiveHandler);
+    
     // Cleanup to prevent double messages
-    return () => {
-      socket.off("receive_message", handleReceiveMessage);
-    };
-  }, []);
+    return () => socket.off("receive_message", receiveHandler);
+  }, []); // Run only once
 
-  // 3. Send Message Function
   const sendMessage = async () => {
     if (currentMessage !== "") {
       const messageData = {
-        room: streamId,
-        author: username,
+        room: roomId, // Must match the room we joined!
+        author: username || "Guest",
         message: currentMessage,
         time: new Date(Date.now()).getHours() + ":" + new Date(Date.now()).getMinutes(),
       };
 
+      // Send to server
       await socket.emit("send_message", messageData);
-      setMessageList((list) => [...list, messageData]); // Add my own message to list
+      
+      // Add to my own screen immediately
+      setMessageList((list) => [...list, messageData]);
       setCurrentMessage("");
     }
   };
 
   return (
-    <div className="chat-box" style={{ background: "#0f172a", height: "100%", display: "flex", flexDirection: "column", borderLeft: "1px solid #334155" }}>
-      
-      {/* Header */}
-      <div style={{ padding: "10px", background: "#1e293b", borderBottom: "1px solid #334155", color: "white" }}>
-        <h3>Live Chat</h3>
-        <input 
-          type="text" 
-          placeholder="Enter your name..." 
-          onChange={(e) => setUsername(e.target.value)}
-          style={{ background: "transparent", border: "1px solid #475569", color: "#94a3b8", padding: "4px", fontSize: "12px", marginTop: "5px" }} 
-        />
+    <div className="chat-window">
+      <div className="chat-header">
+        <p>Live Chat 💬</p>
       </div>
-
-      {/* Messages Window */}
-      <div style={{ flex: 1, padding: "10px", overflowY: "auto", color: "white" }}>
+      <div className="chat-body">
         {messageList.map((msg, index) => (
-          <div key={index} style={{ marginBottom: "10px" }}>
-            <strong style={{ color: "#38bdf8" }}>{msg.author}: </strong>
-            <span>{msg.message}</span>
-            <span style={{ fontSize: "10px", color: "#64748b", marginLeft: "8px" }}>{msg.time}</span>
+          <div className="message" key={index} id={username === msg.author ? "you" : "other"}>
+            <div>
+              <div className="message-content">
+                <p>{msg.message}</p>
+              </div>
+              <div className="message-meta">
+                <p id="time">{msg.time}</p>
+                <p id="author">{msg.author}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
-
-      {/* Input Area */}
-      <div style={{ padding: "10px", background: "#1e293b", display: "flex" }}>
+      <div className="chat-footer">
         <input
           type="text"
           value={currentMessage}
-          placeholder="Say something..."
+          placeholder="Type a message..."
           onChange={(event) => setCurrentMessage(event.target.value)}
           onKeyPress={(event) => { event.key === "Enter" && sendMessage(); }}
-          style={{ flex: 1, padding: "8px", borderRadius: "4px", border: "none" }}
         />
-        <button onClick={sendMessage} style={{ marginLeft: "5px", padding: "8px 15px", background: "#22c55e", border: "none", color: "white", cursor: "pointer", borderRadius: "4px" }}>
-          Send
-        </button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );

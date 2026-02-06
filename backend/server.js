@@ -11,10 +11,10 @@ const streamRoutes = require("./routes/stream.routes");
 const app = express();
 const server = http.createServer(app); // Wrap Express in HTTP Server
 
-// Configure Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Allow Frontend to connect
+    // Make sure your NETLIFY or RENDER frontend link is in this list
+    origin: ["http://localhost:5173", "https://gaming-stream-hub.onrender.com"],
     methods: ["GET", "POST"]
   }
 });

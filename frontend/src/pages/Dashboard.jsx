@@ -100,6 +100,7 @@ function Dashboard() {
         <label style={{display:'block', fontWeight:'bold'}}>Video File:</label>
         <input type="file" accept="video/*" onChange={(e) => setFile(e.target.files[0])} style={{ display: "block", margin: "5px 0 20px 0" }} />
         
+        
         <button onClick={handleCreateStream} style={{ padding: "10px 20px", background: "#38bdf8", border: "none", cursor: "pointer", fontSize: "16px", borderRadius: "4px" }}>Go Live 🔴</button>
       </div>
 

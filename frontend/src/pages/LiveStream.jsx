@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom"; // Import hooks
 import ChatBox from "../components/ChatBox";
 
+
 function LiveStream() {
   const { id } = useParams(); // Get the ID from the URL (e.g., /stream/123)
   const location = useLocation();
@@ -66,7 +67,7 @@ function LiveStream() {
 
         {/* Right: Chat Box */}
         <div style={{ flex: 1, borderLeft: "1px solid #334155" }}>
-          <ChatBox streamId={stream._id} />
+          <ChatBox roomId={id} username="User" />
         </div>
       </div>
     </div>
