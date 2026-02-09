@@ -1,4 +1,4 @@
-// ✅ FIXED: Now pointing to your Live Cloud Backend
+// It must be the Render Link, NOT localhost
 const API_URL = "https://gaming-stream-web-app.onrender.com/api/stream";
 
 /*
