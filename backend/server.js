@@ -22,7 +22,15 @@ const io = new Server(server, {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve files
+// --- Updated CORS Middleware ---
+const corsOptions = {
+  // Use the same list you have for Socket.io
+  origin: ["http://localhost:5173", "https://gaming-stream-hub.onrender.com"], 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+};
+
+app.use(cors(corsOptions)); // ✅ Apply the strict options here
 
 // Database Connection
 // Password is now 'StreamApp2026' (No symbol)
