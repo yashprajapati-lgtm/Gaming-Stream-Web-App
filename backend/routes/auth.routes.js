@@ -6,18 +6,21 @@ const router = express.Router();
 
 // --- REGISTER ROUTE ---
 // Changed from /signup to /register to match your Frontend code!
+// ✅ Correct Route for your Frontend
 router.post("/register", async (req, res) => {
   try {
+    const { username, email, password, bio } = req.body; // Pull Bio from body
+
     const user = new User({
-      username: req.body.username,
-      email: req.body.email.trim().toLowerCase(),
-      password: req.body.password.trim(),
-      bio: req.body.bio || "" // ✅ Now saving the Bio you added!
+      username,
+      email: email.trim().toLowerCase(),
+      password, // Use bcrypt.hash in production!
+      bio: bio || "" // ✅ Save the Bio here
     });
+
     await user.save();
     res.json({ message: "User registered successfully" });
   } catch (err) {
-    console.error("Signup Error:", err);
     res.status(500).json({ message: "Error registering user" });
   }
 });
