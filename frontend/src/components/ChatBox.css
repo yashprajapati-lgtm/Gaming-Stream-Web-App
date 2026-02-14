@@ -1,15 +1,12 @@
 /* ChatBox.css */
 .chat-window {
-  width: 300px;
-  height: 500px; /* Fixed height so it fits next to video */
-  background: #18181b; /* Dark Gamer Background */
-  border: 1px solid #333;
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  height: 100%;       /* 👈 CHANGE THIS (Was 450px) */
+  width: 100%;        /* 👈 Add this to be safe */
+  background: #18181b; 
+  border-left: 1px solid #333; /* Move border here */
+  font-family: sans-serif;
 }
 
 .chat-header {

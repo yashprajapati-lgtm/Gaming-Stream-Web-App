@@ -80,8 +80,8 @@ function LiveStream() {
         </div>
 
         {/* Right Side: Chat Box */}
-        <div style={{ flex: 1, minWidth: "300px", borderLeft: "1px solid #333", background: "#18181b" }}>
-          {/* We pass the stream ID so users join the correct chat room */}
+        {/* REMOVED: background: "#18181b" and borderLeft */}
+        <div style={{ flex: 1, minWidth: "300px", height: "100%" }}>
           <ChatBox roomId={id} username="User" />
         </div>
 
