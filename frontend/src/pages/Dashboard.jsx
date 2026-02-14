@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Dashboard.css"; // Ensure you created this file from the previous step!
+import "./Dashboard.css"; // We will create this next
 
 function Dashboard() {
   const [title, setTitle] = useState("");
-  const [game, setGame] = useState(""); 
-  const [description, setDescription] = useState("");
+  const [game, setGame] = useState(""); // Added Game
+  const [description, setDescription] = useState(""); // Added Description
   const [thumbnail, setThumbnail] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
-  
-  // ✅ FIX 1: Use the Render URL (Not localhost)
   const API_URL = "https://gaming-stream-web-app.onrender.com";
 
+  // 1. Redirect if not logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -23,6 +22,7 @@ function Dashboard() {
     }
   }, [navigate]);
 
+  // 2. Handle Upload
   const handleUpload = async (e) => {
     e.preventDefault();
     
@@ -34,18 +34,20 @@ function Dashboard() {
     setLoading(true);
     const token = localStorage.getItem("token");
 
+    // ⚡ CRITICAL: Using FormData for file uploads
     const formData = new FormData();
     formData.append("title", title);
     formData.append("game", game || "Just Chatting");
     formData.append("description", description);
-    formData.append("videoFile", video);      
-    formData.append("thumbnailFile", thumbnail); 
+    formData.append("videoFile", video);      // Must match Backend name 'videoFile'
+    formData.append("thumbnailFile", thumbnail); // Must match Backend name 'thumbnailFile'
 
     try {
       const res = await fetch(`${API_URL}/api/stream/create`, {
         method: "POST",
         headers: {
-          // ✅ FIX 2: Send Token correctly as 'Bearer <token>'
+          // Do NOT set 'Content-Type': 'multipart/form-data' manually. 
+          // The browser sets it automatically with the boundary when using FormData.
           "Authorization": `Bearer ${token}` 
         },
         body: formData,
@@ -55,7 +57,7 @@ function Dashboard() {
 
       if (res.ok) {
         alert("✅ Stream Created Successfully!");
-        navigate("/"); // Go to Home Page
+        navigate("/"); // Go to Home Page to see it
       } else {
         alert("❌ Upload Failed: " + (data.message || "Unknown Error"));
         console.error("Upload Error:", data);
@@ -76,7 +78,6 @@ function Dashboard() {
 
         <form onSubmit={handleUpload} className="upload-form">
           
-          {/* Title Input */}
           <div className="form-group">
             <label>Stream Title</label>
             <input 
@@ -87,7 +88,6 @@ function Dashboard() {
             />
           </div>
 
-          {/* Game Category */}
           <div className="form-group">
             <label>Game Category</label>
             <input 
@@ -98,7 +98,6 @@ function Dashboard() {
             />
           </div>
 
-          {/* Description */}
            <div className="form-group">
             <label>Description</label>
             <textarea 
@@ -108,7 +107,6 @@ function Dashboard() {
             />
           </div>
 
-          {/* File Uploads */}
           <div className="file-group">
             <div className="file-input">
               <label>📸 Thumbnail (Image)</label>
@@ -121,7 +119,6 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Submit Button */}
           <button type="submit" className="upload-btn" disabled={loading}>
             {loading ? "Uploading... (Please Wait)" : "🔴 Go Live Now"}
           </button>
