@@ -86,8 +86,7 @@ router.post("/create", auth, uploadFields, async (req, res) => {
   }
 });
 
-// ✅ DELETE STREAM (For Admin)
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     const stream = await Stream.findById(req.params.id);
     if (!stream) return res.status(404).json({ message: "Stream not found" });

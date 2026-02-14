@@ -1,55 +1,59 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getLiveStreams } from "../services/streamService"; 
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link
+import StreamCard from "../components/StreamCard";
+import "./Home.css"; // ✅ Import the new styles
 
 function Home() {
   const [streams, setStreams] = useState([]);
+  const API_URL = "https://gaming-stream-web-app.onrender.com"; // Your Render URL
 
   useEffect(() => {
-    getLiveStreams().then((data) => {
-      setStreams(data);
-    });
+    fetch(`${API_URL}/api/stream/live`)
+      .then((res) => res.json())
+      .then((data) => setStreams(data))
+      .catch((err) => console.error("Error fetching streams:", err));
   }, []);
 
-  // YOUR CLOUD BACKEND URL (No slash at the end)
-  const API_URL = "https://gaming-stream-web-app.onrender.com";
-
   return (
-    <div className="home">
-      <section className="hero">
-        <h1>🎮 Watch Live Gaming Streams</h1>
-        <p>Stream • Watch • Chat with gamers worldwide</p>
-      </section>
-
-      <section className="streams">
-        <h2>🔥 Live Streams</h2>
-        <div className="stream-grid">
-          {streams.length === 0 ? (
-            <p>No streams live right now.</p>
-          ) : (
-            streams.map((stream) => (
-              <Link 
-                to={`/live/${stream._id}`} 
-                state={stream} 
-                key={stream._id} 
-                style={{ textDecoration: 'none', color: 'white' }}
-              >
-                <div className="card">
-                  {/* ✅ FIXED: Uses Cloud URL for images now */}
-                  <img
-                    src={stream.thumbnailUrl ? `${API_URL}${stream.thumbnailUrl}` : "https://via.placeholder.com/300x180"} 
-                    alt="stream" 
-                    style={{ width: "100%", height: "180px", objectFit: "cover" }}
-                  />
-                  <h3>{stream.title}</h3>
-                  <p>👤 {stream.game}</p>
-                  <p>👁 {stream.viewers} viewers</p>
-                </div>
-              </Link>
-            ))
-          )}
+    <div className="home-container">
+      
+      {/* 🦸‍♂️ Hero Section */}
+      <div className="hero-section">
+        <div className="hero-content">
+          <h1 className="hero-title">NEXT LEVEL GAMING</h1>
+          <p className="hero-subtitle">
+            Join the community. Watch live streams. Chat with gamers worldwide.
+          </p>
+          {/* Scroll down to streams on click */}
+          <button className="cta-button" onClick={() => window.scrollTo(0, 500)}>
+            Start Watching 🎮
+          </button>
         </div>
-      </section>
+      </div>
+
+      {/* 📺 Live Streams Section */}
+      <div className="streams-section">
+        <div className="section-header">
+          <h2>🔥 Live Channels</h2>
+          <span className="live-badge">LIVE</span>
+        </div>
+
+        {streams.length > 0 ? (
+          <div className="streams-grid">
+            {streams.map((stream) => (
+              <StreamCard key={stream._id} stream={stream} />
+            ))}
+          </div>
+        ) : (
+          <div style={{ textAlign: "center", padding: "50px", color: "#666" }}>
+            <h3>No one is live right now 😢</h3>
+            <p>Be the first to go live!</p>
+            <Link to="/dashboard">
+              <button className="cta-button" style={{ marginTop: "20px" }}>Go Live Now</button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
