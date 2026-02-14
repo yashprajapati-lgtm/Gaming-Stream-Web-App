@@ -1,32 +1,17 @@
-const API_URL = "http://localhost:5000/api/auth";
+// ✅ UPDATE THIS TO YOUR RENDER LINK
+const API_URL = "https://gaming-stream-web-app.onrender.com/api/auth";
 
-/*
-  Auth Service
-  Handles login and signup API calls
-*/
-
-// 🔹 Login Service
 export const loginUser = async (email, password) => {
-  const response = await fetch(`${API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  return response.json();
-};
-
-// 🔹 Signup Service
-export const signupUser = async (username, email, password) => {
-  const response = await fetch(`${API_URL}/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ username, email, password })
-  });
-
-  return response.json();
+    return await response.json();
+  } catch (error) {
+    console.error("Login Service Error:", error);
+    throw error;
+  }
 };
