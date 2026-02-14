@@ -1,62 +1,58 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const http = require("http"); // New Import
-const { Server } = require("socket.io"); // New Import
+const http = require("http");
+const { Server } = require("socket.io");
 const path = require("path");
 
+// Route Imports
 const authRoutes = require("./routes/auth.routes");
 const streamRoutes = require("./routes/stream.routes");
 
 const app = express();
-const server = http.createServer(app); // Wrap Express in HTTP Server
+const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    // Make sure your NETLIFY or RENDER frontend link is in this list
-    origin: ["http://localhost:5173", "https://gaming-stream-hub.onrender.com"],
-    methods: ["GET", "POST"]
-  }
-});
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-// --- Updated CORS Middleware ---
+// ✅ 1. Define CORS Options FIRST
+// This ensures both Express and Socket.io allow your local and live frontends
 const corsOptions = {
-  // Use the same list you have for Socket.io
-  origin: ["http://localhost:5173", "https://gaming-stream-hub.onrender.com"], 
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: ["http://localhost:5173", "https://gaming-stream-hub.onrender.com"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 };
 
-app.use(cors(corsOptions)); // ✅ Apply the strict options here
+// ✅ 2. Apply Middleware in the CORRECT Order
+app.use(cors(corsOptions)); // Apply CORS once with specific options
+app.use(express.json()); // Allow the server to handle JSON data
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded videos/images
 
-// Database Connection
-// Password is now 'StreamApp2026' (No symbol)
+// ✅ 3. Initialize Socket.io with the same CORS rules
+const io = new Server(server, {
+  cors: corsOptions
+});
+
+// ✅ 4. Database Connection (MongoDB Atlas)
 const MONGO_URI = "mongodb+srv://yash:StreamApp2026@cluster0.xk7v0h5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connected to Cloud Database (Atlas)"))
   .catch(err => console.error("❌ DB Error:", err));
 
-// Routes
+// ✅ 5. Define API Routes (Must come AFTER middleware)
 app.use("/api/auth", authRoutes);
 app.use("/api/stream", streamRoutes);
 
-// --- SOCKET.IO LOGIC ---
+// ✅ 6. Socket.io Logic for Chat
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  // User joins a specific stream's chat room
   socket.on("join_room", (room) => {
     socket.join(room);
     console.log(`User with ID: ${socket.id} joined room: ${room}`);
   });
 
-  // User sends a message
   socket.on("send_message", (data) => {
-    // Send this message to everyone ELSE in the same room
+    // Broadcast message to everyone in the room except the sender
     socket.to(data.room).emit("receive_message", data);
   });
 
@@ -65,9 +61,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// Use the Cloud's port OR 5000 if on laptop
+// ✅ 7. Start the Server
 const PORT = process.env.PORT || 5000;
-
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
