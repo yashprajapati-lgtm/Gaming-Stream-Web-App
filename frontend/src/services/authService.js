@@ -1,5 +1,5 @@
-// ✅ UPDATE THIS TO YOUR RENDER LINK
-const API_URL = "https://gaming-stream-web-app.onrender.com/api/auth";
+// ✅ MUST be the backend URL (web-app), NOT the frontend URL
+const API_URL = "https://gaming-stream-web-app.onrender.com/api";
 
 export const loginUser = async (email, password) => {
   try {

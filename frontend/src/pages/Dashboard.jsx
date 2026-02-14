@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Dashboard.css"; // We will create this next
+import "./Dashboard.css";
 
 function Dashboard() {
   const [title, setTitle] = useState("");
-  const [game, setGame] = useState(""); // Added Game
-  const [description, setDescription] = useState(""); // Added Description
+  const [game, setGame] = useState("");
+  const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
-  const API_URL = "https://gaming-stream-web-app.onrender.com/api/stream";
 
-  // 1. Redirect if not logged in
+  // ✅ 1. Corrected API URL (Matches your backend service)
+  const API_URL = "https://gaming-stream-web-app.onrender.com/api";
+
+  // ✅ 2. Redirect if not logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -22,7 +24,7 @@ function Dashboard() {
     }
   }, [navigate]);
 
-  // 2. Handle Upload
+  // ✅ 3. Handle Upload
   const handleUpload = async (e) => {
     e.preventDefault();
     
@@ -34,21 +36,20 @@ function Dashboard() {
     setLoading(true);
     const token = localStorage.getItem("token");
 
-    // ⚡ CRITICAL: Using FormData for file uploads
+    // Using FormData for file uploads
     const formData = new FormData();
     formData.append("title", title);
     formData.append("game", game || "Just Chatting");
     formData.append("description", description);
-    formData.append("videoFile", video);      // Must match Backend name 'videoFile'
-    formData.append("thumbnailFile", thumbnail); // Must match Backend name 'thumbnailFile'
+    formData.append("videoFile", video);      // Backend expects 'videoFile'
+    formData.append("thumbnailFile", thumbnail); // Backend expects 'thumbnailFile'
 
     try {
-      const res = await fetch(`${API_URL}/api/stream/create`, {
+      // ✅ FIX: Removed the extra '/api' from the path to avoid 404 errors
+      const res = await fetch(`${API_URL}/stream/create`, {
         method: "POST",
         headers: {
-          // Do NOT set 'Content-Type': 'multipart/form-data' manually. 
-          // The browser sets it automatically with the boundary when using FormData.
-          "Authorization": `Bearer ${token}` 
+          "Authorization": `Bearer ${token}` // ✅ Required to fix "Invalid token"
         },
         body: formData,
       });
@@ -57,7 +58,7 @@ function Dashboard() {
 
       if (res.ok) {
         alert("✅ Stream Created Successfully!");
-        navigate("/"); // Go to Home Page to see it
+        navigate("/"); 
       } else {
         alert("❌ Upload Failed: " + (data.message || "Unknown Error"));
         console.error("Upload Error:", data);
