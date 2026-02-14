@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./Login.css"; // We can reuse the Login styles to keep it consistent
+import "./Login.css"; 
 
 function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [bio, setBio] = useState(""); // ✅ Added Bio state
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Connects to your live Render backend
   const API_URL = "https://gaming-stream-web-app.onrender.com/api/auth";
 
   const handleSignup = async (e) => {
@@ -20,7 +20,7 @@ function Signup() {
       const res = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, bio }), // ✅ Sending bio to backend
       });
 
       const data = await res.json();
@@ -33,7 +33,7 @@ function Signup() {
       }
     } catch (error) {
       console.error(error);
-      alert("Error connecting to server.");
+      alert("Error connecting to server. Is it awake?");
     } finally {
       setLoading(false);
     }
@@ -76,6 +76,17 @@ function Signup() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+            />
+          </div>
+
+          {/* ✅ New Bio Field */}
+          <div className="input-group">
+            <label>About Me (Bio)</label>
+            <textarea
+              placeholder="Tell us about your gaming style..."
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              style={{ width: '100%', padding: '10px', background: '#0e0e10', border: '1px solid #333', color: 'white', borderRadius: '6px' }}
             />
           </div>
 
