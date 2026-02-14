@@ -1,72 +1,93 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import "./Login.css"; // We can reuse the Login styles to keep it consistent
 
 function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignup = async () => {
+  // ✅ Connects to your live Render backend
+  const API_URL = "https://gaming-stream-web-app.onrender.com/api/auth";
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      const response = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // We trim simply to ensure clean data is sent
-        body: JSON.stringify({ 
-          username, 
-          email: email.trim().toLowerCase(), 
-          password: password.trim() 
-        })
+        body: JSON.stringify({ username, email, password }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok) {
-        alert("Registration Successful! Please Login.");
-        navigate("/login"); // Redirect to login page
+      if (res.ok) {
+        alert("✅ Account created! Please login.");
+        navigate("/login");
       } else {
-        alert("Signup Failed: " + data.message);
+        alert("❌ Signup Failed: " + (data.message || "Try again"));
       }
     } catch (error) {
       console.error(error);
-      alert("Error connecting to server");
+      alert("Error connecting to server.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>📝 Create Account</h2>
+    <div className="login-container">
+      <div className="login-card">
+        <h2>🎮 Join GameStream</h2>
+        <p>Start your streaming journey today.</p>
 
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <br /><br />
+        <form onSubmit={handleSignup}>
+          <div className="input-group">
+            <label>Username</label>
+            <input
+              type="text"
+              placeholder="Pick a gamer name"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <br /><br />
+          <div className="input-group">
+            <label>Email Address</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br /><br />
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Create a strong password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-      <button onClick={handleSignup}>Sign Up</button>
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Creating Account..." : "Create Account"}
+          </button>
+        </form>
 
-      <p>
-        Already have an account? <Link to="/login" style={{ color: "cyan" }}>Login here</Link>
-      </p>
+        <p style={{ marginTop: "20px", color: "#a1a1aa" }}>
+          Already have an account? <Link to="/login" style={{ color: "#9147ff" }}>Login</Link>
+        </p>
+      </div>
     </div>
   );
 }
