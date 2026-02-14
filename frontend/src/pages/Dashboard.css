@@ -1,0 +1,107 @@
+/* frontend/src/pages/Dashboard.css */
+
+.dashboard-container {
+  min-height: 100vh;
+  background-color: #0e0e10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-card {
+  background: #18181b;
+  width: 100%;
+  max-width: 600px;
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.dashboard-card h1 {
+  color: white;
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.subtitle {
+  color: #a1a1aa;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group label {
+  display: block;
+  color: #efeff1;
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.form-group input, .form-group textarea {
+  width: 100%;
+  padding: 12px;
+  background: #0e0e10;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  border-color: #9147ff; /* Twitch Purple Focus */
+}
+
+.file-group {
+  display: flex;
+  gap: 20px;
+}
+
+.file-input {
+  flex: 1;
+}
+
+.file-input label {
+  display: block;
+  color: #a1a1aa;
+  margin-bottom: 5px;
+  font-size: 0.85rem;
+}
+
+.file-input input {
+  color: white;
+  font-size: 0.8rem;
+}
+
+.upload-btn {
+  background: #e91e63; /* Live Red */
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 10px;
+}
+
+.upload-btn:hover {
+  background: #c2185b;
+}
+
+.upload-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
