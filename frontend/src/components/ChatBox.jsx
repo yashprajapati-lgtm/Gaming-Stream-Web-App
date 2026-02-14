@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
-
+import "./ChatBox.css";
 // ✅ FIX 1: Connect to your RENDER URL (Not Localhost!)
 const socket = io.connect("https://gaming-stream-web-app.onrender.com");
 
