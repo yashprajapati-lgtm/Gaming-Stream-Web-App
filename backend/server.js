@@ -13,9 +13,12 @@ const app = express();
 const server = http.createServer(app);
 
 // ✅ 1. Define CORS Options FIRST
-// This ensures both Express and Socket.io allow your local and live frontends
+// Using the correct URL from your Render dashboard
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://gaming-stream-hub.onrender.com"],
+  origin: [
+    "http://localhost:5173", 
+    "https://gaming-stream-frontend.onrender.com" // ✅ Corrected Frontend URL
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
@@ -24,7 +27,7 @@ const corsOptions = {
 // ✅ 2. Apply Middleware in the CORRECT Order
 app.use(cors(corsOptions)); // Apply CORS once with specific options
 app.use(express.json()); // Allow the server to handle JSON data
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded videos/images
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve files
 
 // ✅ 3. Initialize Socket.io with the same CORS rules
 const io = new Server(server, {
@@ -52,7 +55,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
-    // Broadcast message to everyone in the room except the sender
     socket.to(data.room).emit("receive_message", data);
   });
 
