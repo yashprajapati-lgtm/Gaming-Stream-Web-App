@@ -11,7 +11,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
-  const API_URL = "https://gaming-stream-web-app.onrender.com";
+  const API_URL = "https://gaming-stream-web-app.onrender.com/api/stream";
 
   // 1. Redirect if not logged in
   useEffect(() => {

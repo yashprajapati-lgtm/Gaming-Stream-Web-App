@@ -12,46 +12,46 @@ const streamRoutes = require("./routes/stream.routes");
 const app = express();
 const server = http.createServer(app);
 
-// ✅ 1. Define CORS Options FIRST
-// Using the correct URL from your Render dashboard
+// ✅ 1. Definitive CORS Options
+// These allow your specific Render frontend and local laptop to connect
 const corsOptions = {
   origin: [
     "http://localhost:5173", 
-    "https://gaming-stream-frontend.onrender.com" // ✅ Corrected Frontend URL
+    "https://gaming-stream-frontend.onrender.com" // ✅ Correct Frontend URL from Render
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization"], 
   credentials: true
 };
 
-// ✅ 2. Apply Middleware in the CORRECT Order
-app.use(cors(corsOptions)); // Apply CORS once with specific options
-app.use(express.json()); // Allow the server to handle JSON data
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve files
+// ✅ 2. Apply Middleware in the Correct Order
+app.use(cors(corsOptions)); // Must be first
+app.use(express.json()); 
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 
-// ✅ 3. Initialize Socket.io with the same CORS rules
+// ✅ 3. Socket.io setup
 const io = new Server(server, {
   cors: corsOptions
 });
 
-// ✅ 4. Database Connection (MongoDB Atlas)
+// ✅ 4. Database Connection
 const MONGO_URI = "mongodb+srv://yash:StreamApp2026@cluster0.xk7v0h5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connected to Cloud Database (Atlas)"))
   .catch(err => console.error("❌ DB Error:", err));
 
-// ✅ 5. Define API Routes (Must come AFTER middleware)
+// ✅ 5. Routes (Must come AFTER middleware)
 app.use("/api/auth", authRoutes);
 app.use("/api/stream", streamRoutes);
 
-// ✅ 6. Socket.io Logic for Chat
+// ✅ 6. Socket.io Logic
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("join_room", (room) => {
     socket.join(room);
-    console.log(`User with ID: ${socket.id} joined room: ${room}`);
+    console.log(`User joined room: ${room}`);
   });
 
   socket.on("send_message", (data) => {
@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// ✅ 7. Start the Server
+// ✅ 7. Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
