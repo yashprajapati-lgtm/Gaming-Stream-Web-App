@@ -11,7 +11,7 @@ function Signup() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = "https://gaming-stream-web-app.onrender.com/api/stream";
+  const API_URL = "https://gaming-stream-web-app.onrender.com/api";
 
   const handleSignup = async (e) => {
     e.preventDefault();

@@ -12,22 +12,23 @@ function Dashboard() {
   
   const navigate = useNavigate();
 
-  // ✅ 1. Corrected API URL (Matches your backend service)
+  // ✅ 1. API URL synchronized with your live Render backend
   const API_URL = "https://gaming-stream-web-app.onrender.com/api";
 
-  // ✅ 2. Redirect if not logged in
+  // ✅ 2. Security Check: Redirect to login if no token exists
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login first!");
+      alert("Please login first! 🔒");
       navigate("/login");
     }
   }, [navigate]);
 
-  // ✅ 3. Handle Upload
+  // ✅ 3. Handle Stream Upload
   const handleUpload = async (e) => {
     e.preventDefault();
     
+    // Basic Validation
     if (!title || !video || !thumbnail) {
       alert("Please fill in all fields (Title, Video, and Thumbnail)");
       return;
@@ -36,20 +37,21 @@ function Dashboard() {
     setLoading(true);
     const token = localStorage.getItem("token");
 
-    // Using FormData for file uploads
+    // Preparing Data for multipart/form-data upload
     const formData = new FormData();
     formData.append("title", title);
     formData.append("game", game || "Just Chatting");
     formData.append("description", description);
-    formData.append("videoFile", video);      // Backend expects 'videoFile'
-    formData.append("thumbnailFile", thumbnail); // Backend expects 'thumbnailFile'
+    formData.append("videoFile", video);      // Matches backend field name
+    formData.append("thumbnailFile", thumbnail); // Matches backend field name
 
     try {
-      // ✅ FIX: Removed the extra '/api' from the path to avoid 404 errors
+      // ✅ Fetching from the stream creation endpoint
       const res = await fetch(`${API_URL}/stream/create`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}` // ✅ Required to fix "Invalid token"
+          // ⚡ Authorization header fixes the 'Invalid Token' issue
+          "Authorization": `Bearer ${token}` 
         },
         body: formData,
       });
@@ -57,17 +59,23 @@ function Dashboard() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("✅ Stream Created Successfully!");
+        alert("✅ Stream Created Successfully! You are now live.");
         navigate("/"); 
       } else {
-        alert("❌ Upload Failed: " + (data.message || "Unknown Error"));
+        // Handling backend rejection
+        alert("❌ Upload Failed: " + (data.message || "Session expired. Please re-login."));
         console.error("Upload Error:", data);
+        
+        if (res.status === 401) {
+            localStorage.removeItem("token");
+            navigate("/login");
+        }
       }
     } catch (error) {
       console.error("Network Error:", error);
-      alert("❌ Network Error. Check console.");
+      alert("❌ Server connection error. Please try again later.");
     } finally {
-
+      setLoading(false); // ✅ Ensures button re-enables
     }
   };
 
@@ -75,7 +83,7 @@ function Dashboard() {
     <div className="dashboard-container">
       <div className="dashboard-card">
         <h1>🚀 Streamer Dashboard</h1>
-        <p className="subtitle">Upload your gameplay and go live.</p>
+        <p className="subtitle">Upload your gameplay and go live instantly.</p>
 
         <form onSubmit={handleUpload} className="upload-form">
           
@@ -86,6 +94,7 @@ function Dashboard() {
               placeholder="Ex: PRO VALORANT RANKED MATCH" 
               value={title} 
               onChange={(e) => setTitle(e.target.value)} 
+              required
             />
           </div>
 
@@ -111,17 +120,27 @@ function Dashboard() {
           <div className="file-group">
             <div className="file-input">
               <label>📸 Thumbnail (Image)</label>
-              <input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files[0])} />
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={(e) => setThumbnail(e.target.files[0])} 
+                required
+              />
             </div>
 
             <div className="file-input">
               <label>🎥 Gameplay (Video)</label>
-              <input type="file" accept="video/*" onChange={(e) => setVideo(e.target.files[0])} />
+              <input 
+                type="file" 
+                accept="video/*" 
+                onChange={(e) => setVideo(e.target.files[0])} 
+                required
+              />
             </div>
           </div>
 
           <button type="submit" className="upload-btn" disabled={loading}>
-            {loading ? "Uploading... (Please Wait)" : "🔴 Go Live Now"}
+            {loading ? "🚀 Uploading... (Please Wait)" : "🔴 Go Live Now"}
           </button>
 
         </form>
