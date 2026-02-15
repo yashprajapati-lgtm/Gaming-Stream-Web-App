@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
 import "./Login.css"; 
 
 function Login() {
@@ -9,26 +8,40 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Connect directly to your Render Backend
+  const API_URL = "https://gaming-stream-web-app.onrender.com/api";
+
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevents page reload
+    e.preventDefault();
     setLoading(true);
 
     try {
-      const data = await loginUser(email, password);
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email: email.trim().toLowerCase(), // ✅ Matches backend trim/lowercase
+          password: password.trim() 
+        }),
+      });
 
-      if (data.token) {
-        // ✅ SAVE THE RENDER TOKEN
+      const data = await response.json();
+
+      if (response.ok && data.token) {
+        // ✅ SAVE THE TOKEN
         localStorage.setItem("token", data.token);
         alert("Login successful! 🔓");
-        navigate("/dashboard"); // Redirect to dashboard
+        navigate("/dashboard");
       } else {
-        alert("Invalid credentials: " + (data.message || "Try again"));
+        // This catches "Email not found" or "Invalid password" from your backend
+        alert("❌ Login Failed: " + (data.message || "Invalid credentials"));
       }
     } catch (error) {
-      alert("Login failed. Is the server awake?");
+      // This triggers if the Render server is sleeping
+      console.error("Login Error:", error);
+      alert("❌ Could not reach the server. Please wait 60 seconds for Render to wake up.");
     } finally {
       setLoading(false);
-    
     }
   };
 
@@ -36,7 +49,7 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <h2>🎮 Login to GameStream</h2>
-        
+        <p>Welcome back, Gamer!</p>
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
@@ -48,6 +61,8 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+          </div>
+          <div className="input-group">
             <label>Password</label>
             <input
               type="password"
@@ -58,12 +73,10 @@ function Login() {
             /> 
           </div>
 
-         
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Logging in..." : "Login Now"}
           </button>
         </form>
-
       </div>
     </div>
   );

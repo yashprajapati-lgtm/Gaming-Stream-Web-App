@@ -11,36 +11,36 @@ function Signup() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = "https://gaming-stream-web-app.onrender.com/api";
-
   const handleSignup = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await fetch(`${API_URL}/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password, bio }), // ✅ Sending bio to backend
-      });
+  // Keep your base URL as is
+  const API_URL = "https://gaming-stream-web-app.onrender.com/api"; 
 
+  try {
+    // ⚡ FIX: Path changed to /auth/register to match auth.routes.js
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password, bio }),
+    });
+
+    if (res.ok) {
+      alert("✅ Account created! Redirecting to login...");
+      navigate("/login");
+    } else {
       const data = await res.json();
-
-      if (res.ok) {
-        alert("✅ Account created! Please login.");
-        navigate("/login");
-      } else {
-        alert("❌ Signup Failed: " + (data.message || "Try again"));
-        alert("Signup failed. Try a different username.");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error connecting to server. Is it awake?");
-    } finally {
-      setLoading(false);
+      alert("❌ Signup Failed: " + data.message);
     }
-  };
-
+  } catch (error) {
+    // Catches the SyntaxError from 404 HTML pages
+    console.error("Signup Error:", error);
+    alert("❌ Server Error: Make sure your Render backend is awake!");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="login-container">
       <div className="login-card">
