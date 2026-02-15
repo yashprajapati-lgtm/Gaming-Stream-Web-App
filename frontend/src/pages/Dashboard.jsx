@@ -67,7 +67,7 @@ function Dashboard() {
       console.error("Network Error:", error);
       alert("❌ Network Error. Check console.");
     } finally {
-      setLoading(false);
+
     }
   };
 

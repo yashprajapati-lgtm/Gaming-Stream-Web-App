@@ -28,6 +28,7 @@ function Login() {
       alert("Login failed. Is the server awake?");
     } finally {
       setLoading(false);
+    
     }
   };
 
@@ -35,7 +36,7 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <h2>🎮 Login to GameStream</h2>
-        <p>Welcome back, Streamer!</p>
+        
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
@@ -47,9 +48,6 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </div>
-
-          <div className="input-group">
             <label>Password</label>
             <input
               type="password"
@@ -57,13 +55,15 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-            />
+            /> 
           </div>
 
+         
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Logging in..." : "Login Now"}
           </button>
         </form>
+
       </div>
     </div>
   );

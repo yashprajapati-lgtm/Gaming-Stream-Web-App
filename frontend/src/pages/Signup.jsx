@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Login.css"; 
@@ -30,6 +31,7 @@ function Signup() {
         navigate("/login");
       } else {
         alert("❌ Signup Failed: " + (data.message || "Try again"));
+        alert("Signup failed. Try a different username.");
       }
     } catch (error) {
       console.error(error);
