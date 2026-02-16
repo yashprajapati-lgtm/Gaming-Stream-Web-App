@@ -51,7 +51,7 @@ function Dashboard() {
         method: "POST",
         headers: {
           // ⚡ Authorization header fixes the 'Invalid Token' issue
-          "Authorization": `Bearer ${token}` 
+          "Authorization": token 
         },
         body: formData,
       });
