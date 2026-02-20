@@ -14,7 +14,7 @@ function StreamCard({ stream }) {
   return (
     // ✅ 3. Wrap the card in a Link to make it clickable
     // We send the user to /stream/{id} so they can watch the video
-    <Link to={`/stream/${stream?._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+    <Link to={`/live/${stream?._id}`} style={{ textDecoration: "none", color: "inherit" }}>
       <div className="card">
         <img 
           src={imageUrl} 
