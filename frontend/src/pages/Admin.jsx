@@ -26,25 +26,36 @@ function Admin() {
     fetchStreams();
   }, []);
 
-  // 2. Delete Function
-  const handleDelete = async (id) => {
-    if (window.confirm("⚠️ Are you sure you want to DELETE this stream?")) {
-      try {
-        const res = await fetch(`${API_URL}/api/stream/${id}`, {
-          method: "DELETE",
-        });
+  const handleDelete = async (streamId) => {
+    // 1. Grab the token from storage
+    const token = localStorage.getItem("token");
+    
+    // 2. Prevent action if not logged in
+    if (!token) {
+      alert("You must be logged in to delete streams!");
+      return;
+    }
 
-        if (res.ok) {
-           alert("✅ Stream Deleted Successfully!");
-           // Refresh the list immediately so it disappears
-           fetchStreams(); 
-        } else {
-           alert("❌ Failed to delete. Check console.");
+    try {
+      // 3. Send the DELETE request with the token
+      const res = await fetch(`https://gaming-stream-web-app.onrender.com/api/stream/${streamId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": token // ⚡ FIX: Sending raw token just like we did in Dashboard!
         }
-      } catch (error) {
-        console.error("Delete error:", error);
-        alert("Error connecting to server.");
+      });
+
+      if (res.ok) {
+        alert("✅ Stream deleted successfully!");
+        // Optional: Refresh the page or filter the deleted stream out of your state here
+        window.location.reload(); 
+      } else {
+        const data = await res.json();
+        alert("❌ Failed to delete: " + data.message);
       }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Server error while deleting.");
     }
   };
 
